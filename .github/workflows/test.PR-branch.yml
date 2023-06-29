@@ -12,7 +12,9 @@ jobs:
   Test-Shared-Components:
     name: Test shared components
     runs-on: ubuntu-20.04
-    needs: []
+    needs:
+      - Test-fictional-meme
+      - Test-supreme-octo-enigma
     defaults:
       run:
         working-directory: .
@@ -29,6 +31,116 @@ jobs:
         run: make generate check_clean_working_tree
       - name: Test the unified config
         run: make test-config
+    env:
+      CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
+  Test-fictional-meme:
+    name: 'Test: fictional-meme'
+    runs-on: ubuntu-20.04
+    concurrency: terraform-state-lock-org_fictional-meme
+    permissions:
+      contents: read
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+        if: ${{ success() }}
+      - name: Setup CUE
+        uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
+        with:
+          version: v0.6.0-alpha.1
+        if: ${{ success() }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
+          terraform_wrapper: false
+        if: ${{ success() }}
+      - name: Initialize Terraform state/plugins/backend
+        run: make ci_tf_init ORG=fictional-meme
+        if: ${{ success() }}
+      - name: Validate terraform input
+        run: make ci_tf_validate ORG=fictional-meme
+        if: ${{ success() }}
+      - name: Serialise Terraform's plan
+        run: make ci_tf_plan ORG=fictional-meme
+        env:
+          TF_VAR_provider_github_token: ${{ secrets.GH_API_TOKEN }}
+        if: ${{ success() }}
+      - if: (success() || failure())
+        name: Reformat plan output as diff
+        run: make _operations/github/fictional-meme/tmp/tfplan.zip.diff.md ORG=fictional-meme COMMIT_ID=${{ github.sha }}
+      - if: (success() || failure())
+        name: Post plan diff to GitHub PR
+        uses: mshick/add-pr-comment@v2.6.1
+        with:
+          status: ${{ job.status }}
+          allow-repeats: true
+          message-path: _operations/github/fictional-meme/tmp/tfplan.zip.diff.md
+          message-failure: |-
+            # test plan FAILURE: `fictional-meme`
+
+            Check GitHub Actions job output for more details.
+    env:
+      CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
+  Test-supreme-octo-enigma:
+    name: 'Test: supreme-octo-enigma'
+    runs-on: ubuntu-20.04
+    concurrency: terraform-state-lock-org_supreme-octo-enigma
+    permissions:
+      contents: read
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+        if: ${{ success() }}
+      - name: Setup CUE
+        uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
+        with:
+          version: v0.6.0-alpha.1
+        if: ${{ success() }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
+          terraform_wrapper: false
+        if: ${{ success() }}
+      - name: Initialize Terraform state/plugins/backend
+        run: make ci_tf_init ORG=supreme-octo-enigma
+        if: ${{ success() }}
+      - name: Validate terraform input
+        run: make ci_tf_validate ORG=supreme-octo-enigma
+        if: ${{ success() }}
+      - name: Serialise Terraform's plan
+        run: make ci_tf_plan ORG=supreme-octo-enigma
+        env:
+          TF_VAR_provider_github_token: ${{ secrets.GH_API_TOKEN }}
+        if: ${{ success() }}
+      - if: (success() || failure())
+        name: Reformat plan output as diff
+        run: make _operations/github/supreme-octo-enigma/tmp/tfplan.zip.diff.md ORG=supreme-octo-enigma COMMIT_ID=${{ github.sha }}
+      - if: (success() || failure())
+        name: Post plan diff to GitHub PR
+        uses: mshick/add-pr-comment@v2.6.1
+        with:
+          status: ${{ job.status }}
+          allow-repeats: true
+          message-path: _operations/github/supreme-octo-enigma/tmp/tfplan.zip.diff.md
+          message-failure: |-
+            # test plan FAILURE: `supreme-octo-enigma`
+
+            Check GitHub Actions job output for more details.
     env:
       CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
 env:

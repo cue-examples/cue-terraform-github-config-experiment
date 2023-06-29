@@ -1,0 +1,82 @@
+{
+    "resource": {
+        "github_membership": {
+            "myitcv_owner": {
+                "username": "myitcv",
+                "role": "admin"
+            },
+            "jpluscplusm": {
+                "username": "jpluscplusm",
+                "role": "member"
+            }
+        },
+        "github_organization_settings": {
+            "self": {
+                "billing_email": "cue-terraform-github-config-experiment-controller+billing@cue.works",
+                "default_repository_permission": "none",
+                "advanced_security_enabled_for_new_repositories": false,
+                "dependabot_alerts_enabled_for_new_repositories": false,
+                "dependabot_security_updates_enabled_for_new_repositories": false,
+                "dependency_graph_enabled_for_new_repositories": false,
+                "has_organization_projects": false,
+                "has_repository_projects": false,
+                "members_can_create_internal_repositories": false,
+                "members_can_create_pages": false,
+                "members_can_create_private_pages": false,
+                "members_can_create_private_repositories": false,
+                "members_can_create_public_pages": false,
+                "members_can_create_public_repositories": false,
+                "members_can_create_repositories": false,
+                "members_can_fork_private_repositories": false,
+                "secret_scanning_enabled_for_new_repositories": false,
+                "secret_scanning_push_protection_enabled_for_new_repositories": false,
+                "web_commit_signoff_required": false
+            }
+        },
+        "github_team": {
+            "company_employees": {
+                "name": "Company Employees Team",
+                "description": "All company employees [terraform-managed]",
+                "privacy": "secret",
+                "create_default_maintainer": false
+            }
+        },
+        "github_team_membership": {
+            "members_company_employees_team_jpluscplusm": {
+                "team_id": "${github_team.company_employees.id}",
+                "username": "jpluscplusm",
+                "role": "member"
+            }
+        }
+    },
+    "terraform": {
+        "cloud": {
+            "organization": "cue-terraform-github-config-experiment",
+            "workspaces": {
+                "tags": [
+                    "service:github",
+                    "org:fictional-meme"
+                ]
+            }
+        },
+        "required_providers": {
+            "github": {
+                "source": "integrations/github",
+                "version": "5.25.1"
+            }
+        },
+        "required_version": "~> 1.4.6"
+    },
+    "provider": {
+        "github": {
+            "token": "${var.provider_github_token}",
+            "owner": "fictional-meme"
+        }
+    },
+    "variable": {
+        "provider_github_token": {
+            "sensitive": true,
+            "type": "string"
+        }
+    }
+}

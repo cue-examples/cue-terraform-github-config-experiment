@@ -9,6 +9,10 @@ jobs:
     name: Notify on apply failure
     needs:
       - Test-Shared-Components
+      - Test-fictional-meme
+      - Test-supreme-octo-enigma
+      - Apply-fictional-meme
+      - Apply-supreme-octo-enigma
     if: ${{ failure() }}
     runs-on: ubuntu-20.04
     defaults:
@@ -57,6 +61,308 @@ jobs:
         run: make generate check_clean_working_tree
       - name: Test the unified config
         run: make test-config
+    env:
+      CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
+  Test-fictional-meme:
+    name: 'Test: fictional-meme'
+    runs-on: ubuntu-20.04
+    concurrency: terraform-state-lock-org_fictional-meme
+    permissions:
+      contents: read
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+        if: ${{ success() }}
+      - name: Setup CUE
+        uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
+        with:
+          version: v0.6.0-alpha.1
+        if: ${{ success() }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
+          terraform_wrapper: false
+        if: ${{ success() }}
+      - name: Initialize Terraform state/plugins/backend
+        run: make ci_tf_init ORG=fictional-meme
+        if: ${{ success() }}
+      - name: Validate terraform input
+        run: make ci_tf_validate ORG=fictional-meme
+        if: ${{ success() }}
+      - name: Serialise Terraform's plan
+        run: make ci_tf_plan ORG=fictional-meme
+        env:
+          TF_VAR_provider_github_token: ${{ secrets.GH_API_TOKEN }}
+        if: ${{ success() }}
+      - if: (success() || failure())
+        name: Reformat plan output as diff
+        run: make _operations/github/fictional-meme/tmp/tfplan.zip.diff.md ORG=fictional-meme COMMIT_ID=${{ github.sha }}
+      - if: (success() || failure())
+        name: Post plan diff to GitHub PR
+        uses: mshick/add-pr-comment@v2.6.1
+        with:
+          status: ${{ job.status }}
+          allow-repeats: true
+          message-path: _operations/github/fictional-meme/tmp/tfplan.zip.diff.md
+          message-failure: |-
+            # test plan FAILURE: `fictional-meme`
+
+            Check GitHub Actions job output for more details.
+    env:
+      CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
+  Test-supreme-octo-enigma:
+    name: 'Test: supreme-octo-enigma'
+    runs-on: ubuntu-20.04
+    concurrency: terraform-state-lock-org_supreme-octo-enigma
+    permissions:
+      contents: read
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+        if: ${{ success() }}
+      - name: Setup CUE
+        uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
+        with:
+          version: v0.6.0-alpha.1
+        if: ${{ success() }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
+          terraform_wrapper: false
+        if: ${{ success() }}
+      - name: Initialize Terraform state/plugins/backend
+        run: make ci_tf_init ORG=supreme-octo-enigma
+        if: ${{ success() }}
+      - name: Validate terraform input
+        run: make ci_tf_validate ORG=supreme-octo-enigma
+        if: ${{ success() }}
+      - name: Serialise Terraform's plan
+        run: make ci_tf_plan ORG=supreme-octo-enigma
+        env:
+          TF_VAR_provider_github_token: ${{ secrets.GH_API_TOKEN }}
+        if: ${{ success() }}
+      - if: (success() || failure())
+        name: Reformat plan output as diff
+        run: make _operations/github/supreme-octo-enigma/tmp/tfplan.zip.diff.md ORG=supreme-octo-enigma COMMIT_ID=${{ github.sha }}
+      - if: (success() || failure())
+        name: Post plan diff to GitHub PR
+        uses: mshick/add-pr-comment@v2.6.1
+        with:
+          status: ${{ job.status }}
+          allow-repeats: true
+          message-path: _operations/github/supreme-octo-enigma/tmp/tfplan.zip.diff.md
+          message-failure: |-
+            # test plan FAILURE: `supreme-octo-enigma`
+
+            Check GitHub Actions job output for more details.
+    env:
+      CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
+  Apply-fictional-meme:
+    defaults:
+      run:
+        working-directory: .
+    needs:
+      - Test-Shared-Components
+      - Test-fictional-meme
+      - Test-supreme-octo-enigma
+    name: 'Apply: fictional-meme'
+    runs-on: ubuntu-20.04
+    concurrency: terraform-state-lock-org_fictional-meme
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        if: ${{ success() }}
+      - name: Setup CUE
+        uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
+        with:
+          version: v0.6.0-alpha.1
+        if: ${{ success() }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
+          terraform_wrapper: false
+        if: ${{ success() }}
+      - name: Initialize Terraform state/plugins/backend
+        run: make ci_tf_init ORG=fictional-meme
+        if: ${{ success() }}
+      - name: terraform apply
+        id: terraform_apply
+        env:
+          TF_VAR_provider_github_token: ${{ secrets.GH_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [ "${CUE_DEBUG_SCRIPTS:-}" = "true" ]
+          then
+            set -x
+          fi
+
+          # Assert that the working tree contains only files which are as
+          # they were committed, or are gitignored.  This ensures that the
+          # config we're about to `terraform apply` is exactly what the
+          # developer comitted, with no additional files that might confuse
+          # terraform.
+          make check_clean_working_tree || {
+            echo "ERROR: reason: git working tree is not clean"                            | tee -a _operations/github/fictional-meme/tmp/tf-apply.stderr.log
+            echo "ERROR: result: exiting and failing before attemping a 'terraform apply'" | tee -a _operations/github/fictional-meme/tmp/tf-apply.stderr.log
+            exit 1
+          }
+
+          make DANGER_ci_tf_apply \
+            ORG=fictional-meme \
+            FILE_TF_APPLY_STDERR=_operations/github/fictional-meme/tmp/tf-apply.stderr.log \
+            FILE_TF_APPLY_STDOUT=_operations/github/fictional-meme/tmp/tf-apply.stdout.log \
+            REALLY_DO_RUN_TERRAFORM_APPLY=true
+        if: ${{ success() }}
+      - if: (success() || failure())
+        name: Reformat terraform-apply output as diff
+        env:
+          COMMIT_ID: ${{ github.sha }}
+          ORG: fictional-meme
+          APPLY_STATUS: ${{ steps.terraform_apply.conclusion }}
+        run: |
+          file=_operations/github/fictional-meme/tmp/tf-apply.log.md
+          cat ci/misc/tf-apply-to-diff.envsubst \
+          | envsubst \
+          >$file
+
+          # format as diff; strip trailing blank lines
+          sed -E --file=ci/misc/tf-plan-to-diff.sed \
+            _operations/github/fictional-meme/tmp/tf-apply.stdout.log \
+            _operations/github/fictional-meme/tmp/tf-apply.stderr.log \
+          | tac | awk 'NF{x=1};NF+x' | tac \
+          >>$file
+
+          echo '```' >>$file
+      - if: (success() || failure())
+        name: Post apply diff to GitHub PR
+        uses: mshick/add-pr-comment@v2.6.1
+        with:
+          status: ${{ job.status }}
+          allow-repeats: true
+          message-path: _operations/github/fictional-meme/tmp/tf-apply.log.md
+          message-failure: |-
+            # terraform apply FAILURE: `fictional-meme`
+
+            Check GitHub Actions job output for more details.
+    env:
+      CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
+  Apply-supreme-octo-enigma:
+    defaults:
+      run:
+        working-directory: .
+    needs:
+      - Test-Shared-Components
+      - Test-fictional-meme
+      - Test-supreme-octo-enigma
+    name: 'Apply: supreme-octo-enigma'
+    runs-on: ubuntu-20.04
+    concurrency: terraform-state-lock-org_supreme-octo-enigma
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        if: ${{ success() }}
+      - name: Setup CUE
+        uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
+        with:
+          version: v0.6.0-alpha.1
+        if: ${{ success() }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
+          terraform_wrapper: false
+        if: ${{ success() }}
+      - name: Initialize Terraform state/plugins/backend
+        run: make ci_tf_init ORG=supreme-octo-enigma
+        if: ${{ success() }}
+      - name: terraform apply
+        id: terraform_apply
+        env:
+          TF_VAR_provider_github_token: ${{ secrets.GH_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [ "${CUE_DEBUG_SCRIPTS:-}" = "true" ]
+          then
+            set -x
+          fi
+
+          # Assert that the working tree contains only files which are as
+          # they were committed, or are gitignored.  This ensures that the
+          # config we're about to `terraform apply` is exactly what the
+          # developer comitted, with no additional files that might confuse
+          # terraform.
+          make check_clean_working_tree || {
+            echo "ERROR: reason: git working tree is not clean"                            | tee -a _operations/github/supreme-octo-enigma/tmp/tf-apply.stderr.log
+            echo "ERROR: result: exiting and failing before attemping a 'terraform apply'" | tee -a _operations/github/supreme-octo-enigma/tmp/tf-apply.stderr.log
+            exit 1
+          }
+
+          make DANGER_ci_tf_apply \
+            ORG=supreme-octo-enigma \
+            FILE_TF_APPLY_STDERR=_operations/github/supreme-octo-enigma/tmp/tf-apply.stderr.log \
+            FILE_TF_APPLY_STDOUT=_operations/github/supreme-octo-enigma/tmp/tf-apply.stdout.log \
+            REALLY_DO_RUN_TERRAFORM_APPLY=true
+        if: ${{ success() }}
+      - if: (success() || failure())
+        name: Reformat terraform-apply output as diff
+        env:
+          COMMIT_ID: ${{ github.sha }}
+          ORG: supreme-octo-enigma
+          APPLY_STATUS: ${{ steps.terraform_apply.conclusion }}
+        run: |
+          file=_operations/github/supreme-octo-enigma/tmp/tf-apply.log.md
+          cat ci/misc/tf-apply-to-diff.envsubst \
+          | envsubst \
+          >$file
+
+          # format as diff; strip trailing blank lines
+          sed -E --file=ci/misc/tf-plan-to-diff.sed \
+            _operations/github/supreme-octo-enigma/tmp/tf-apply.stdout.log \
+            _operations/github/supreme-octo-enigma/tmp/tf-apply.stderr.log \
+          | tac | awk 'NF{x=1};NF+x' | tac \
+          >>$file
+
+          echo '```' >>$file
+      - if: (success() || failure())
+        name: Post apply diff to GitHub PR
+        uses: mshick/add-pr-comment@v2.6.1
+        with:
+          status: ${{ job.status }}
+          allow-repeats: true
+          message-path: _operations/github/supreme-octo-enigma/tmp/tf-apply.log.md
+          message-failure: |-
+            # terraform apply FAILURE: `supreme-octo-enigma`
+
+            Check GitHub Actions job output for more details.
     env:
       CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
 env:

@@ -7,7 +7,9 @@ name: Detect drift
 jobs:
   Alert:
     name: Report drift
-    needs: []
+    needs:
+      - Drift-fictional-meme
+      - Drift-supreme-octo-enigma
     if: ${{ failure() }}
     runs-on: ubuntu-20.04
     defaults:
@@ -35,6 +37,66 @@ jobs:
             --h-Subject "Infrastructure drift detected" \
             --body      "Infrastructure drift detected: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
             --to "cue-terraform-github-config-experiment-controller+notifications@cue.works"
+    env:
+      CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
+  Drift-fictional-meme:
+    name: 'Detect drift: fictional-meme'
+    runs-on: ubuntu-20.04
+    concurrency: terraform-state-lock-org_fictional-meme
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        if: ${{ success() }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
+          terraform_wrapper: false
+        if: ${{ success() }}
+      - name: Initialize Terraform state/plugins/backend
+        run: make ci_tf_init ORG=fictional-meme
+        if: ${{ success() }}
+      - name: Detect drift
+        env:
+          TF_VAR_provider_github_token: ${{ secrets.GH_API_TOKEN }}
+        run: make ci_tf_plan ORG=fictional-meme DRIFT_DETECTION=1
+        if: ${{ success() }}
+    env:
+      CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
+  Drift-supreme-octo-enigma:
+    name: 'Detect drift: supreme-octo-enigma'
+    runs-on: ubuntu-20.04
+    concurrency: terraform-state-lock-org_supreme-octo-enigma
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        if: ${{ success() }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+          cli_config_credentials_token: ${{ secrets.TFC_API_TOKEN }}
+          terraform_wrapper: false
+        if: ${{ success() }}
+      - name: Initialize Terraform state/plugins/backend
+        run: make ci_tf_init ORG=supreme-octo-enigma
+        if: ${{ success() }}
+      - name: Detect drift
+        env:
+          TF_VAR_provider_github_token: ${{ secrets.GH_API_TOKEN }}
+        run: make ci_tf_plan ORG=supreme-octo-enigma DRIFT_DETECTION=1
+        if: ${{ success() }}
     env:
       CUE_DEBUG_SCRIPTS: ${{ vars.CUE_DEBUG_SCRIPTS }}
 env:
