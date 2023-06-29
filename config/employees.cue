@@ -6,5 +6,6 @@ company: {
 	#Employee: login: github: string
 	employees: {
 		[_]: #Employee
+		jonathan: login: github: "jpluscplusm"
 	}
 }

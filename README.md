@@ -571,7 +571,7 @@ section.
   [org-level default settings](config/defaults.cue)
   - *or* you know which of the org's settings deviate from our defaults, and
     what their values are
-- The machine user account `FIXME_MACHINE_USER_ACCOUNT_USERNAME`
+- The machine user account `cue-terraform-github-config-experiment-controller`
   has been manually invited into the org as an owner
   - ... and the machine user has logged in and accepted the invitation via the
     GitHub web UI

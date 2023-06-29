@@ -16,7 +16,7 @@ github: {
 		}
 		terraform: github.terraform & {
 			cloud: {
-				organization: FIXME_TERRAFORM_CLOUD_ORG
+				organization: "cue-terraform-github-config-experiment"
 				workspaces: tags: ["service:github", "org:\(orgName)"]
 			}
 		}

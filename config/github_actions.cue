@@ -154,7 +154,7 @@ github: actions: {
 				},
 				step.#NotifyEmail & {
 					if: "${{ always() }}"
-					#To: [FIXME_NOTIFICATIONS_EMAIL]
+					#To: ["cue-terraform-github-config-experiment-controller+notifications@cue.works"]
 					#Subject: "Infrastructure drift detected"
 					#Message: "\(#Subject): \(workflow_link)"
 				},
@@ -177,7 +177,7 @@ github: actions: {
 				},
 				step.#NotifyEmail & {
 					if: "${{ always() }}"
-					#To: [FIXME_NOTIFICATIONS_EMAIL]
+					#To: ["cue-terraform-github-config-experiment-controller+notifications@cue.works"]
 					#Subject: "CI failure on infra repo `main` branch"
 					#Message: "Failed CI workflow: \(workflow_link)"
 				},
@@ -433,7 +433,7 @@ github: actions: {
 				  --no-progress-meter \\
 				  -d content="\(#Message)" \\
 				  -d username="Github Actions" \\
-				  "https://discord.com/api/webhooks/FIXME_DISCORD_WEBHOOK_ID/${{ secrets.DISCORD_WEBHOOK_TOKEN }}"
+				  "https://discord.com/api/webhooks/1086214516129398814/${{ secrets.DISCORD_WEBHOOK_TOKEN }}"
 				"""
 		}
 

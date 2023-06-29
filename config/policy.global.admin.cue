@@ -39,16 +39,16 @@ github: org: [orgName=_]: config: terraform.#Config & {
 		}
 
 		github_organization_settings: self: {
-			billing_email: FIXME_BILLING_EMAIL
+			billing_email: "cue-terraform-github-config-experiment-controller+billing@cue.works"
 		}
 
 		github_membership: {
 			// Orgs have these owner accounts as admin
 
-			// foo_bar_owner: {
-			// 	username: "foo bar owner username"
-			// 	role:     "admin"
-			// }
+			myitcv_owner: {
+				username: "myitcv"
+				role:     "admin"
+			}
 		}
 	}
 }

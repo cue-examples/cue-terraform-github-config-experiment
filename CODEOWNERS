@@ -1,6 +1,6 @@
 # Order is important in this file: the **last** matching line wins.
 # cf. https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners#codeowners-syntax
 
-/.github/workflows/*.yml @FIXME_ONE_OR_MORE_INFRA_ADMIN_USERNAMES
-/CODEOWNERS              @FIXME_ONE_OR_MORE_INFRA_ADMIN_USERNAMES
-*.admin.cue              @FIXME_ONE_OR_MORE_INFRA_ADMIN_USERNAMES # leave this line at the *bottom* of the file
+/.github/workflows/*.yml @myitcv @jpluscplusm
+/CODEOWNERS              @myitcv @jpluscplusm
+*.admin.cue              @myitcv @jpluscplusm # leave this line at the *bottom* of the file
