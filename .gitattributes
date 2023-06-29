@@ -1,0 +1,2 @@
+/.github/workflows/*.yml linguist-generated
+/github/org-**/config.tf.json linguist-generated

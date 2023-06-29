@@ -1,0 +1,11 @@
+{
+    "terraform": {
+        "required_providers": {
+            "github": {
+                "source": "integrations/github",
+                "version": "5.25.1"
+            }
+        },
+        "required_version": "~> 1.4.6"
+    }
+}

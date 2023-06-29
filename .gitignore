@@ -1,0 +1,5 @@
+/_operations/github/*/.terraform/*
+/_operations/github/*/tmp/*
+
+FORCE
+!.gitkeep

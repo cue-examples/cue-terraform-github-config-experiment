@@ -1,0 +1,6 @@
+# Terraform apply
+## org:       `$ORG`
+## result:    `$APPLY_STATUS`
+#### commit-id: `$COMMIT_ID`
+
+```diff
