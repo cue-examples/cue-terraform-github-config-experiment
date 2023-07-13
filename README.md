@@ -308,7 +308,7 @@ by Hashicorp. We use it to store our Terraform state files, and to provide
 locking primitives for access to those state files.
 
 Expose a TFC API token via the environment variable
-`TF_TOKEN_app_terraform_io`.  
+`TF_TOKEN_app_terraform_io`.
 
 In mid-2023, these tokens look like
 `<random-characters>.atlasv1.<random-characters>`.
@@ -319,7 +319,7 @@ The GitHub resources resources managed by the system are accessed via the
 Github API.
 
 Expose an appropriately-permissioned GitHub API token via the environment
-variable `TF_VAR_provider_github_token`.  
+variable `TF_VAR_provider_github_token`.
 
 In mid-2023, these tokens
 [look like](https://github.blog/changelog/2021-03-31-authentication-token-format-updates-are-generally-available/)
@@ -718,7 +718,7 @@ transfers in
 1. Move (or delete) the config of any resources that are dependent on the repo
    (such as access granted via `_non_org_member_access` between the 2 orgs'
    `resource` structs
-1. Raise a PR containing these changes in line with the 
+1. Raise a PR containing these changes in line with the
    [content change](#making-a-content-change-in-one-or-more-orgs) section, but
    **do not merge the PR**
 1. Observe that the `terraform plan` output posted to the PR as comments shows
@@ -756,3 +756,4 @@ transfers in
 1. Merge the PR, and verify that the changes performed after the merge match
    those proposed in the PR comments
 1. Advise your colleagues that the critical region has finished.
+
