@@ -16,5 +16,5 @@ versions: {
 			"mshick/add-pr-comment":     "v2.6.1"
 		}
 	}
-	cue: "v0.6.0-alpha.1"
+	cue: "v0.6.0-beta.1"
 }

@@ -55,7 +55,7 @@ jobs:
       - name: Setup CUE
         uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
         with:
-          version: v0.6.0-alpha.1
+          version: v0.6.0-beta.1
         if: ${{ success() }}
       - name: Test that all generated files match their CUE sources
         run: make generate check_clean_working_tree
@@ -82,7 +82,7 @@ jobs:
       - name: Setup CUE
         uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
         with:
-          version: v0.6.0-alpha.1
+          version: v0.6.0-beta.1
         if: ${{ success() }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -137,7 +137,7 @@ jobs:
       - name: Setup CUE
         uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
         with:
-          version: v0.6.0-alpha.1
+          version: v0.6.0-beta.1
         if: ${{ success() }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -194,7 +194,7 @@ jobs:
       - name: Setup CUE
         uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
         with:
-          version: v0.6.0-alpha.1
+          version: v0.6.0-beta.1
         if: ${{ success() }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -290,7 +290,7 @@ jobs:
       - name: Setup CUE
         uses: cue-lang/setup-cue@0be332bb74c8a2f07821389447ba3163e2da3bfb
         with:
-          version: v0.6.0-alpha.1
+          version: v0.6.0-beta.1
         if: ${{ success() }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
